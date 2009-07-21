@@ -30,6 +30,10 @@ td {
   vertical-align:    center;
 }
 
+#info {
+  margin-top: 5px;
+}
+
 #score-container {
   vertical-align:   bottom;
 }
@@ -51,6 +55,12 @@ td {
 
 #msgbox {
   margin-top: 5px;
+}
+
+span.next-game {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 #s0 {cursor: pointer;}

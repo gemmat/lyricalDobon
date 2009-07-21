@@ -2,6 +2,7 @@ const idList = ["s", "w", "n", "e"];
 const dirs = ["U", "R", "D", "L"];
 const suits = ["C", "D", "H", "S"];
 const ranks = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
+const enemyWait = 1000;
 var gameCount = 0;
 var oya = 0;
 var turn = 0;
@@ -44,7 +45,6 @@ function charImage(aChar) {
   }
 }
 
-//stop to use small. use css.
 function updateScoreTable() {
   for (var i = 0; i < 4; i++) {
     document.getElementById("sc_" + idList[i]).innerHTML =
@@ -55,65 +55,74 @@ function updateScoreTable() {
     (gameCount <= 4) ? (gameCount + 1) + "回戦" : "結果" +
     "</small>";
 }
+
 function playerCard(aPlayer, aCard) {
   return aPlayer * 9 + aCard;
 }
+
 function cardIndex(aSuit, aRank) {
   return aSuit * 13 + aRank;
 }
-//use while, we need to accout when cards is few.
+
 function takeACard() {
-  var suit = Math.floor(Math.random() *  4);
-  var rank = Math.floor(Math.random() * 13);
-  var index = cardIndex(suit, rank);
-  if (cardVec[index] == "yama") {
-    cardVec[index] = "hand";
-    usedCard++;
-    return [suit, rank];
-  } else {
-    return takeACard();
+  var arr = [];
+  for (var i = 0, len = cardVec.length; i < len; i++) {
+    if (cardVec[i] == "yama") arr.push(i);
   }
+  if (!arr.length) return null;
+  var index = arr[Math.floor(Math.random() * arr.length)];
+  cardVec[index] = "hand";
+  usedCard++;
+  return [Math.floor(index / 13), index % 13];
 }
+
 function dealCards() {
+  var c;
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 5; j++) {
       if ((j != 4) || (i != oya)) {
         var index = playerCard(i, j);
-        [suitVec[index], rankVec[index]] = takeACard();
+        c = takeACard();
+        suitVec[index] = c[0];
+        rankVec[index] = c[1];
       }
     }
   }
-  [yamaSuit, yamaRank] = takeACard();
-  [baSuit, baRank] = takeACard();
+  c = takeACard();
+  yamaSuit = c[0];
+  yamaRank = c[1];
+  c = takeACard();
+  baSuit = c[0];
+  baRank = c[1];
   document.getElementById("info").innerHTML = "<small><b>欲しいカードを選んでください</b></small>";
 }
+
 function updateCard() {
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 9; j++) {
       var elt = document.getElementById(idList[i] + j);
       var index = playerCard(i, j);
       if (suitVec[index] == -1) {
-        elt.setAttribute("class", nlImage(i));
+        elt.className = nlImage(i);
       } else if (i == 0) {
-        elt.setAttribute("class", cardIndex(i, suitVec[index], rankVec[index]));
+        elt.className = cardImage(i, suitVec[index], rankVec[index]);
       } else {
-        elt.setAttribute("class", uraImage(i));
+        elt.className = uraImage(i);
       }
     }
   }
-  document.getElementById("yama").
-    setAttribute("class", (yamaSuit == -2) ? uraImage(0) : cardImage(9, yamaSuit, yamaRank));
-  document.getElementById("ba").
-    setAttribute("class",   (baSuit == -2) ? uraImage(0) : cardImage(0,   baSuit,   baRank));
+  document.getElementById("yama").className = (yamaSuit == -2) ? uraImage(0) : cardImage(0, yamaSuit, yamaRank);
+  document.getElementById("ba")  .className =   (baSuit == -2) ? uraImage(0) : cardImage(0,   baSuit,   baRank);
 }
+
 function showPlayerCard(aPlayer) {
   for (var i = 0; i < 9; i++) {
     var index = playerCard(aPlayer, i);
-    var elt = document.getElementById(idList[aPlayer] + j);
-    if (suitVec(index) == -1) {
-      elt.setAttribute("class", nlImage(aPlayer));
+    var elt = document.getElementById(idList[aPlayer] + i);
+    if (suitVec[index] == -1) {
+      elt.className = nlImage(aPlayer);
     } else {
-      elt.setAttribute("class", cardImage(aPlayer, suitVec[index], rankVec[index]));
+      elt.className = cardImage(aPlayer, suitVec[index], rankVec[index]);
     }
   }
 }
@@ -131,10 +140,9 @@ function initOneGame() {
   dropOnly = false;
   numDraw = 0;
   state = 0;
-  //dealCards();
-  //updateCard();
+  dealCards();
+  updateCard();
 }
-// form p0 p1 ...
 function init() {
   for (var i = 0; i < 4; i++) {
     nameVec[i] = document.getElementById("p" + i).value;
@@ -144,17 +152,16 @@ function init() {
 }
 
 function oyaSelection() {
-  // use true/false.
   function yamaOrBa() {
-    if (yamaRank == 2 - 1) return 0;
-    if (baRank == 2 - 1) return 1;
-    if (yamaRank == 8 - 1) return 0;
-    if (baRank == 8 - 1) return 1;
-    if (yamaRank < baRank) return 0;
-    return 1;
+    if (yamaRank == 2 - 1) return true;
+    if (  baRank == 2 - 1) return false;
+    if (yamaRank == 8 - 1) return true;
+    if (  baRank == 8 - 1) return false;
+    if (yamaRank < baRank) return true;
+    return false;
   }
   var index = playerCard(turn, 4);
-  if (yamaOrBa() == 0) {
+  if (yamaOrBa()) {
     suitVec[index] = yamaSuit;
     rankVec[index] = yamaRank;
   } else {
@@ -162,29 +169,29 @@ function oyaSelection() {
     rankVec[index] = baRank;
     baSuit = yamaSuit;
     baRank = yamaRank;
-    yamaSuit = -2;
-    state = 1;
-    document.getElementById("info").innerHTML = "";
-    updateCard();
-    nextTurn();
   }
+  yamaSuit = -2;
+  state = 1;
+  document.getElementById("info").innerHTML = "";
+  updateCard();
+  nextTurn();
 }
 
 function countCard(aPlayer) {
   for (var i = 0; i < 9; i++) {
-    if (suitVec[playerCard(aPlayer, i) == -1]) return i;
+    if (suitVec[playerCard(aPlayer, i)] == -1) break;
   }
-  return 9;
+  return i;
 }
 
 function countNCard(aPlayer, aN) {
   var num = 0;
   for (var i = 0; i < 9; i++) {
     var index = playerCard(aPlayer, i);
-    if (suitVec[index] == -1) return num;
+    if (suitVec[index] == -1) break;
     if (rankVec[index] == aN - 1) num++;
   }
-  return 9;
+  return num;
 }
 
 function countSpecialCard(aPlayer) {
@@ -196,9 +203,9 @@ function countSpecialCard(aPlayer) {
 
 function dropCheck(aPlayer) {
   var numCards = countCard(aPlayer);
-  var num8 = countNCard(aPlayer, 8);
+  var num8     = countNCard(aPlayer, 8);
   if (numCards == 1 || numCards == num8) return false;
-  if (numCards == 2 || num8     == 1)    return "almost8";
+  if (numCards == 2 && num8     == 1)    return "almost8";
   return true;
 }
 
@@ -211,30 +218,28 @@ function find2Card(aPlayer) {
   }
   return false;
 }
-// dropOnly?
 function findDropCard(aPlayer, aAlmost8) {
   for (var i = 0; i < 9; i++) {
     var index = playerCard(aPlayer, i);
     var suit = suitVec[index];
     var rank = rankVec[index];
-    if (suit == -1) continue;
+    if (suit == -1) break;
     if (aAlmost8 && rank == 8 - 1) continue;
-    if (dropOnly || suit == baSuit || rank == baRank)
-      return i;
+    if (dropOnly || suit == baSuit || rank == baRank) return i;
   }
   return false;
 }
 
 function enemyTurn() {
   var check = dropCheck(turn);
-  if (!check) {
+  if (check === false) {
     if (drawCard(turn)) { //can't drop
       updateCard();
       nextTurn();
     }
   } else if (numDraw > 0) {
     var pos2 = find2Card(turn); //exist 2
-    if (!pos2 || check == "almost8") {
+    if (!pos2 || check === "almost8") {
       if (drawMultiCards(turn, numDraw)) {
         numDraw = 0;
         nextTurn();
@@ -247,9 +252,8 @@ function enemyTurn() {
       if (!dobonCheck(turn)) nextTurn();
     }
   } else {
-    var posDrop = findDropCard(turn, check == "almost8"); // normal state;
-    //check false != 0
-    if (posDrop == false) {
+    var posDrop = findDropCard(turn, check === "almost8"); // normal state;
+    if (posDrop === false) {
       if (drawCard(turn)) {
         updateCard();
         nextTurn();
@@ -262,7 +266,7 @@ function enemyTurn() {
       if (!dobonCheck(turn)) {
         if (drop == 8) {
           dropOnly = true;
-          setTimeout(enemyTurn, 1000);
+          setTimeout(enemyTurn, enemyWait);
         } else {
           nextTurn();
         }
@@ -271,9 +275,8 @@ function enemyTurn() {
   }
 }
 
-// write arrow
 function nextTurn() {
-  var arrow = ["D", "L", "U", "R"];
+  var arrow = ["↓", "←", "↑", "→"];
   turn += gameDirection * (skip ? 2 : 1);
   skip = false;
   if (turn > 3) {
@@ -281,7 +284,7 @@ function nextTurn() {
   } else if (turn < 0) {
     turn += 4;
   }
-  if (turn != 0) setTimeout(enemyTurn, 1000);
+  if (turn != 0) setTimeout(enemyTurn, enemyWait);
   showHint();
   document.getElementById("info").innerHTML = arrow[turn];
 }
@@ -293,13 +296,13 @@ function nextGame(aNextOya) {
     var c = Math.floor(Math.random() * 4);
     showMessage(c,
                 "<b>" + nameVec[c] + "</b>:<br/>「おつかれさま。<br/>再プレイは更新ボタンでのセルフサービスとなっております。」<br/>",
-                function () {return [];});
+                function () {});
   } else {
     clearMessage();
     turn = aNextOya;
     oya  = aNextOya;
     initOneGame();
-    if (oya != 0) setTimeout(oyaSelection, 1000);
+    if (oya != 0) oyaSelection();
   }
 }
 
@@ -317,13 +320,12 @@ function dobonCheck(aHurikomi) {
   var msg = "";
   var agariList = [];
   for (var i = 0; i < 4; i++) {
-    if (i != hurikomi && dobonCheckOnce(i)) {
+    if (i != aHurikomi && dobonCheckOnce(i)) {
       showPlayerCard(i);
       msg = "<b>" + nameVec[i] +  "</b>:<br/>「どぼん！」<br/>";
       agariList.unshift(i);
     }
   }
-  // check the order push? unshift?.
   if (agariList.length) {
     showMessage(agariList[0],
                 msg,
@@ -352,7 +354,8 @@ function dobonCalc(aAgariList, aHurikomi) {
   var baseScore = 0;
   var exScore = 0;
   var score = 0;
-  aAgariList.forEach(function(agari) {
+  for (var i = 0; i < aAgariList.length; i++) {
+    var agari = aAgariList[i];
     baseScore = dobonBaseScore(agari, aHurikomi);
     exScore   = dobonExScore  (agari, aHurikomi);
     score = baseScore * (exScore + 1);
@@ -369,12 +372,12 @@ function dobonCalc(aAgariList, aHurikomi) {
 		      " * (1 + ドローカード" +
           exScore +
           "))<br/>";
-  });
+  };
   updateScoreTable();
-  showMessage(agariList[0],
+  showMessage(aAgariList[0],
               msg,
               function() {
-                nextGame(agariList[0]);
+                nextGame(aAgariList[0]);
               });
 }
 
@@ -383,7 +386,8 @@ function dobonGaeshiCalc(aAgariList, aHurikomi) {
   var baseScore = 0;
   var exScore = 0;
   var score = 0;
-  aAgariList.forEach(function(agari) {
+  for (var i = 0; i < aAgariList.length; i++) {
+    var agari = aAgariList[i];
     baseScore = dobonBaseScore(agari, aHurikomi);
     exScore   = dobonExScore  (agari, aHurikomi);
     score = baseScore * (exScore + 3);
@@ -400,7 +404,7 @@ function dobonGaeshiCalc(aAgariList, aHurikomi) {
 		      " * (3 + ドローカード" +
           exScore +
           "))<br/>";
-  });
+  };
   updateScoreTable();
   showMessage(agariList[0],
               msg,
@@ -427,21 +431,22 @@ function dobonExScore(aAgari, aHurikomi) {
 
 function showMessage(aChar, aMsg, aCont) {
   messageMode = true;
-  document.getElementById("char").setAttribute("class", charImage(aChar));
-  document.getElementById("msgbox").innerHTML = aMsg + "<a href=\"#\"id=\"next\">&gt;&gt;&gt;next&lt;&lt;&lt;</a>";
-  document.getElementById("next").addEventListener("click", aCont, true);
+  document.getElementById("char").src =  charImage(aChar);
+  document.getElementById("msgbox").innerHTML =
+    aMsg + "<span class='next-game' id='next'>&gt;&gt;&gt;next&lt;&lt;&lt;</a>";
+  document.getElementById("next").onclick = aCont;
 }
 
-function showHist() {
+function showHint() {
   var suitList = ["クローバー", "ダイヤ", "ハート", "スペード"];
   var numCard = countCard(0);
   var check = dropCheck(0);
   if (state == 1 && turn == 0) {
-    document.getElementById("char").setAttribute("class", charImage(0));
+    document.getElementById("char").src = charImage(0);
     var msg = "<b>" + nameVec[0] + "</b>:<br/>";
     if (numDraw > 0) {
       msg += "(「２」が出せなかったら山札から" + numDraw + "枚取らないと...)";
-    } else if (numCard == 1 || check == false) {
+    } else if (numCard == 1 || check === false) {
       msg += "(今はカードを出せないから山札から取らないと...)";
     } else {
       msg += "(「" + suitList[baSuit] + "」か「" + (baRank + 1) + "」のカードが出せる...)";
@@ -454,7 +459,7 @@ function showHist() {
 
 function clearMessage() {
   messageMode = false;
-  document.getElementById("char").setAttribute("class", charImage(0));
+  document.getElementById("char").src = charImage(0);
   document.getElementById("msgbox").innerHTML = "";
 }
 
@@ -519,22 +524,20 @@ function drawCard(aPlayer) {
                   nextGame(turn);
                 });
     return false;
-  } else {
-    if (usedCard == 52) resetCard();
-    var index = playerCard(aPlayer, countCard(aPlayer));
-    [suitVec[index], rankVec[index]] = takeACard();
-    return true;
   }
+  if (usedCard == 52) resetCard();
+  var index = playerCard(aPlayer, countCard(aPlayer));
+  var c = takeACard();
+  suitVec[index] = c[0];
+  rankVec[index] = c[1];
+  return true;
 }
 
 function drawMultiCards(aPlayer, aDraw) {
-  var i;
-  for (i = 0; i < aDraw; i++) {
-    if (!drawCard(aPlayer)) {
-      updateCard();
-      break;
-    }
+  for (var i = 0; i < aDraw; i++) {
+    if (!drawCard(aPlayer)) break;
   }
+  updateCard();
   return i == aDraw;
 }
 
@@ -550,16 +553,20 @@ function yamaClick() {
       updateCard();
       nextTurn();
     }
-    if (!messageMode && turn == 0 && !dropOnly) {
-      if (numDraw == 0) {
-        if (drawCard == 0) {
-          updateCard();
-          nextTurn();
-        }
-        if (drawMultiCards(0, numDraw)) {
-          numDraw = 0;
-          updateCard();
-          nextTurn();
+  } else {
+    if (!messageMode && turn == 0) {
+      if (!dropOnly || countCard(0) == 1) {
+        if (numDraw == 0) {
+          if (drawCard(0)) {
+            updateCard();
+            nextTurn();
+          }
+        } else {
+          if (drawMultiCards(0, numDraw)) {
+            numDraw = 0;
+            updateCard();
+            nextTurn();
+          }
         }
       }
     }
@@ -594,15 +601,16 @@ function cardClick(e) {
         nextTurn();
       }
     } else {
-      if (check != false &&
-          !(check == "almost8" && rank == 8 - 1) &&
-          (dropOnly || suit == baSuit || rank == baRank)) {
+      if (check === false) return;
+      if (check === "almost8" && rank != 8 - 1) return;
+      if (dropOnly || suit == baSuit || rank == baRank) {
         var drop = dropCard(suit, rank);
         shiftCard(0, n);
         updateCard();
         if (!dobonCheck(0)) {
           if (drop == 8) {
             dropOnly = true;
+          } else {
             nextTurn();
           }
         }
@@ -613,10 +621,11 @@ function cardClick(e) {
 
 function main() {
   for (var i = 0; i < 9; i++) {
-    document.getElementById("s" + i).addEventListener("click", cardClick, true);
+    document.getElementById("s" + i).onclick = cardClick;
   }
-  document.getElementById("ba")  .addEventListener("click", baClick,   true);
-  document.getElementById("yama").addEventListener("click", yamaClick, true);
+  document.getElementById("ba")  .onclick = baClick;
+  document.getElementById("yama").onclick = yamaClick;
   init();
 }
 
+window.onload = main;
