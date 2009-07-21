@@ -339,6 +339,7 @@ function dobonCheck(aHurikomi) {
 
 function dobonGaeshiCheck(aAgariList, aHurikomi) {
   if (dobonCheckOnce(aHurikomi)) {
+    showPlayerCard(aHurikomi);
     showMessage(aHurikomi,
                 "<b>" + nameVec[aHurikomi] + "</b>:<br/>「どぼん返し！」<br/>",
                 function () {
