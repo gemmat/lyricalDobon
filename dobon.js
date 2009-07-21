@@ -1,8 +1,8 @@
-const idList = ["s", "w", "n", "e"];
-const dirs = ["U", "R", "D", "L"];
-const suits = ["C", "D", "H", "S"];
-const ranks = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
-const enemyWait = 1000;
+var idList = ["s", "w", "n", "e"]; //const
+var dirs   = ["U", "R", "D", "L"]; //const
+var suits  = ["C", "D", "H", "S"]; //const
+var ranks  = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"]; //const
+var enemyWait = 1000; //const
 var gameCount = 0;
 var oya = 0;
 var turn = 0;
@@ -588,11 +588,10 @@ function baClick() {
   }
 }
 
-function cardClick(e) {
-  var n = +e.originalTarget.id[1];
+function cardClick(aN) {
   if (!messageMode && state == 1 && turn == 0) {
     var check = dropCheck(0);
-    var index = playerCard(0, n);
+    var index = playerCard(0, aN);
     var suit = suitVec[index];
     var rank = rankVec[index];
     if (numDraw > 0 && rank != 2 - 1) {
@@ -605,7 +604,7 @@ function cardClick(e) {
       if (check === "almost8" && rank != 8 - 1) return;
       if (dropOnly || suit == baSuit || rank == baRank) {
         var drop = dropCard(suit, rank);
-        shiftCard(0, n);
+        shiftCard(0, aN);
         updateCard();
         if (!dobonCheck(0)) {
           if (drop == 8) {
@@ -621,7 +620,9 @@ function cardClick(e) {
 
 function main() {
   for (var i = 0; i < 9; i++) {
-    document.getElementById("s" + i).onclick = cardClick;
+    document.getElementById("s" + i).onclick = (function(x) {
+      return function(e) {cardClick(x);};
+    })(i);
   }
   document.getElementById("ba")  .onclick = baClick;
   document.getElementById("yama").onclick = yamaClick;
