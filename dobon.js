@@ -340,7 +340,7 @@ function dobonCheck(aHurikomi) {
 function dobonGaeshiCheck(aAgariList, aHurikomi) {
   if (dobonCheckOnce(aHurikomi)) {
     showMessage(aHurikomi,
-                "<b>" + nameVec[aHurikomi] + "</b>:<br/>「どぼん返し！」",
+                "<b>" + nameVec[aHurikomi] + "</b>:<br/>「どぼん返し！」<br/>",
                 function () {
                   dobonGaeshiCalc(aAgariList, aHurikomi);
                 });
@@ -396,7 +396,7 @@ function dobonGaeshiCalc(aAgariList, aHurikomi) {
     msg = "<b>" +
           nameVec[aHurikomi] +
           "</b>へ<b>" +
-          nameVec[aHurikomi] +
+          nameVec[agari] +
   		    "</b>から<b>" +
           score +
           "</b>点<br/>(基本点" +
@@ -406,7 +406,7 @@ function dobonGaeshiCalc(aAgariList, aHurikomi) {
           "))<br/>";
   };
   updateScoreTable();
-  showMessage(agariList[0],
+  showMessage(aAgariList[0],
               msg,
               function() {
                 nextGame(aHurikomi);
