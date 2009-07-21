@@ -1,5 +1,5 @@
 const idList = ["s", "w", "n", "e"];
-const dirs = ["", "R", "D", "L"];
+const dirs = ["U", "R", "D", "L"];
 const suits = ["C", "D", "H", "S"];
 const ranks = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
 var gameCount = 0;
@@ -7,9 +7,9 @@ var oya = 0;
 var turn = 0;
 var scoreVec = [0,0,0,0];
 var nameVec = ["名無し","名無し","名無し","名無し"];
-var cardVec = arrayInit(13 * 4, "yama");
-var suitVec = arrayInit(9  * 4, -1);
-var rankVec = arrayInit(9  * 4, -1);
+var cardVec = [];
+var suitVec = [];
+var rankVec = [];
 var usedCard = 0;
 var gameDirection = 1;
 var dropOnly = false;
@@ -22,21 +22,18 @@ var baRank = -2;
 var skip = false;
 var messageMode = false;
 
-function arrayInit(aLength, aInitValue) {
-  var arr = new Array(aLength);
-  for (var i = 0; i < aLength; i++) arr[i] = aInitValue;
-  return arr;
+function cardImage(aDirection, aSuit, aRank) {
+  return "sprite-" + suits[aSuit] + ranks[aRank] + dirs[aDirection] + " card-" +  dirs[aDirection];
 }
 
-function cardImage(aDirection, aSuit, aRank) {
-  return "img/" + suits[aSuit] + ranks[aRank] + dirs[aDirection] + ".gif";
-}
 function uraImage(aDirection) {
-  return "img/UR0" + dirs[aDirection] + ".gif";
+  return "sprite-UR0" + dirs[aDirection] + " card-" + dirs[aDirection];
 }
+
 function nlImage(aDirection) {
-  return "img/NL" + dirs[aDirection] + ".gif";
+  return "sprite-NL"  + dirs[aDirection] + " card-" + dirs[aDirection];
 }
+
 function charImage(aChar) {
   switch (aChar) {
   case 0: return "img/d_lico.png";
@@ -46,49 +43,17 @@ function charImage(aChar) {
   default: return "";
   }
 }
-function preloadImages() {
-  var imgsrcs = [];
-  suits.forEach(function (suit) {
-    dirs.forEach(function(direction) {
-      ranks.forEach(function(rank) {
-        imgsrcs.push(suit + rank + direction + ".gif");
-      });
-    });
-  });
-  dirs.forEach(function(direction) {
-    imgsrcs.push("UR0" + direction + ".gif");
-    imgsrcs.push("NL"  + direction + ".gif");
-  });
 
-  return imgsrcs.map(function(src) {
-    var img = document.createElement("image");
-    img.src = src;
-    return img;
-  });
-}
-function checkLoaded(aDot, aImgList) {
-  var str = "";
-  for (var i = aDot; i > 0; i--) {
-    document.getElementById("load_div").innerHTML = "<b>画像読み込み中" + str + "</b>";
-    str = str + "・";
-  }
-  aImgList.forEach(function(img) {
-    if (!img.complete) {
-      setTimeout(function() {checkLoaded((aDot + 1) % 5, aImgList);}, 1000);
-      return;
-    }
-  });
-  document.getElementById("load_div").style.visibility = "hidden";
-  document.getElementById("main_div").style.visibility = "visible";
-}
 //stop to use small. use css.
 function updateScoreTable() {
   for (var i = 0; i < 4; i++) {
-    document.getElementById("sc_" + idList[i]).innerHTML = "<small>" + nameVec[i] + "<br/>" + scoreVec[i] + "点</small>";
+    document.getElementById("sc_" + idList[i]).innerHTML =
+      "<small>" + nameVec[i] + "<br/>" + scoreVec[i] + "点</small>";
   }
-  document.getElementById("sc_count").innerHTML = "<small>" +
-                                                   (gameCount <= 4) ? (gameCount + 1) + "回戦" : "結果" +
-                                                   "</small>";
+  document.getElementById("sc_count").innerHTML =
+    "<small>" +
+    (gameCount <= 4) ? (gameCount + 1) + "回戦" : "結果" +
+    "</small>";
 }
 function playerCard(aPlayer, aCard) {
   return aPlayer * 9 + aCard;
@@ -98,8 +63,8 @@ function cardIndex(aSuit, aRank) {
 }
 //use while, we need to accout when cards is few.
 function takeACard() {
-  var suit = Math.floor(Math.random() * 4);
-  var rank = Math.floor(Math.random() * 4);
+  var suit = Math.floor(Math.random() *  4);
+  var rank = Math.floor(Math.random() * 13);
   var index = cardIndex(suit, rank);
   if (cardVec[index] == "yama") {
     cardVec[index] = "hand";
@@ -128,25 +93,27 @@ function updateCard() {
       var elt = document.getElementById(idList[i] + j);
       var index = playerCard(i, j);
       if (suitVec[index] == -1) {
-        elt.src = nlImage(i);
+        elt.setAttribute("class", nlImage(i));
       } else if (i == 0) {
-        elt.src = cardIndex(i, suitVec[index], rankVec[index]);
+        elt.setAttribute("class", cardIndex(i, suitVec[index], rankVec[index]));
       } else {
-        elt.src = uraImage(i);
+        elt.setAttribute("class", uraImage(i));
       }
     }
   }
-  document.getElementById("im_yama").src = (yamaSuit == -2) ? uraImage(0) : cardImage(9, yamaSuit, yamaRank);
-  document.getElementById("im_ba").src = (baSuit == -2) ? uraImage(0) : cardImage(0, baSuit, baRank);
+  document.getElementById("yama").
+    setAttribute("class", (yamaSuit == -2) ? uraImage(0) : cardImage(9, yamaSuit, yamaRank));
+  document.getElementById("ba").
+    setAttribute("class",   (baSuit == -2) ? uraImage(0) : cardImage(0,   baSuit,   baRank));
 }
 function showPlayerCard(aPlayer) {
   for (var i = 0; i < 9; i++) {
     var index = playerCard(aPlayer, i);
     var elt = document.getElementById(idList[aPlayer] + j);
     if (suitVec(index) == -1) {
-      elt.src = nlImage(aPlayer);
+      elt.setAttribute("class", nlImage(aPlayer));
     } else {
-      elt.src = cardImage(aPlayer, suitVec[index], rankVec[index]);
+      elt.setAttribute("class", cardImage(aPlayer, suitVec[index], rankVec[index]));
     }
   }
 }
@@ -164,12 +131,11 @@ function initOneGame() {
   dropOnly = false;
   numDraw = 0;
   state = 0;
-  dealCards();
-  updateCard();
+  //dealCards();
+  //updateCard();
 }
 // form p0 p1 ...
 function init() {
-  checkLoaded(1, preloadImages());
   for (var i = 0; i < 4; i++) {
     nameVec[i] = document.getElementById("p" + i).value;
   }
@@ -461,7 +427,7 @@ function dobonExScore(aAgari, aHurikomi) {
 
 function showMessage(aChar, aMsg, aCont) {
   messageMode = true;
-  document.getElementById("char").src = charImage(aChar);
+  document.getElementById("char").setAttribute("class", charImage(aChar));
   document.getElementById("msgbox").innerHTML = aMsg + "<a href=\"#\"id=\"next\">&gt;&gt;&gt;next&lt;&lt;&lt;</a>";
   document.getElementById("next").addEventListener("click", aCont, true);
 }
@@ -471,7 +437,7 @@ function showHist() {
   var numCard = countCard(0);
   var check = dropCheck(0);
   if (state == 1 && turn == 0) {
-    document.getElementById("char").src = charImage(0);
+    document.getElementById("char").setAttribute("class", charImage(0));
     var msg = "<b>" + nameVec[0] + "</b>:<br/>";
     if (numDraw > 0) {
       msg += "(「２」が出せなかったら山札から" + numDraw + "枚取らないと...)";
@@ -488,7 +454,7 @@ function showHist() {
 
 function clearMessage() {
   messageMode = false;
-  document.getElementById("char").src = charImage(0);
+  document.getElementById("char").setAttribute("class", charImage(0));
   document.getElementById("msgbox").innerHTML = "";
 }
 
@@ -615,10 +581,11 @@ function baClick() {
   }
 }
 
-function cardClick(aN) {
+function cardClick(e) {
+  var n = +e.originalTarget.id[1];
   if (!messageMode && state == 1 && turn == 0) {
     var check = dropCheck(0);
-    var index = playerCard(0, aN);
+    var index = playerCard(0, n);
     var suit = suitVec[index];
     var rank = rankVec[index];
     if (numDraw > 0 && rank != 2 - 1) {
@@ -631,7 +598,7 @@ function cardClick(aN) {
           !(check == "almost8" && rank == 8 - 1) &&
           (dropOnly || suit == baSuit || rank == baRank)) {
         var drop = dropCard(suit, rank);
-        shiftCard(0, aN);
+        shiftCard(0, n);
         updateCard();
         if (!dobonCheck(0)) {
           if (drop == 8) {
@@ -646,13 +613,10 @@ function cardClick(aN) {
 
 function main() {
   for (var i = 0; i < 9; i++) {
-    document.getElementById("s" + i).addEventListener("click", function() {
-      alert(i);
-      cardClick(i);
-    });
+    document.getElementById("s" + i).addEventListener("click", cardClick, true);
   }
-  document.getElementById("im_ba")  .addEventListener("click", baClick,   true);
-  document.getElementById("im_yama").addEventListener("click", yamaClick, true);
+  document.getElementById("ba")  .addEventListener("click", baClick,   true);
+  document.getElementById("yama").addEventListener("click", yamaClick, true);
   init();
 }
 

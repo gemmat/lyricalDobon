@@ -7,137 +7,123 @@
 </head>
 <body>
 <h1>リリカル☆どぼん</h1>
-<div>
-  <small>
-    <a href="./rule.html" target="_blank">ルール説明</a>
-  </small>
-</div>
-<div id="bs-console"></div>
-<div style="visibility:visible" id="load_div">
-  <b>画像読み込み中</b>
+<small><a href="./rule.html">ルール説明</a></small>
+<table>
+  <tr>
+    <td>
+      <table id="sprites">
+        <tr>
+          <td class="sprite-NLD card-D"></td>
+          <td id="n0" class="sprite-UR0D card-D"></td>
+          <td id="n1" class="sprite-UR0D card-D"></td>
+          <td id="n2" class="sprite-UR0D card-D"></td>
+          <td id="n3" class="sprite-UR0D card-D"></td>
+          <td id="n4" class="sprite-UR0D card-D"></td>
+          <td id="n5" class="sprite-UR0D card-D"></td>
+          <td id="n6" class="sprite-UR0D card-D"></td>
+          <td id="n7" class="sprite-UR0D card-D"></td>
+          <td id="n8" class="sprite-UR0D card-D"></td>
+          <td class="sprite-NLD card-D"></td>
+        </tr>
+        <tr>
+          <td id="w0" class="sprite-UR0R card-R"></td>
+          <td id="kotatu" colspan="9" rowspan="9">
+            <span id="yama" class="sprite-UR0 card-U"></span>
+            <span id="ba"   class="sprite-UR0 card-U"></span>
+            <br/>
+            <div id="info"></div>
+          </td>
+          <td id="e0" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td id="w1" class="sprite-UR0R card-R"></td>
+          <td id="e1" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td id="w2" class="sprite-UR0R card-R"></td>
+          <td id="e2" class="sprite-UR0L card-L"></td>
+        </tr>          
+        <tr>
+          <td id="w3" class="sprite-UR0R card-R"></td>
+          <td id="e3" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td id="w4" class="sprite-UR0R card-R"></td>
+          <td id="e4" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td id="w5" class="sprite-UR0R card-R"></td>
+          <td id="e5" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td id="w6" class="sprite-UR0R card-R"></td>
+          <td id="e6" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td id="w7" class="sprite-UR0R card-R"></td>
+          <td id="e7" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td id="w8" class="sprite-UR0R card-R"></td>
+          <td id="e8" class="sprite-UR0L card-L"></td>
+        </tr>
+        <tr>
+          <td class="sprite-NLU card-U"></td>
+          <td id="s0" class="sprite-H01U card-U"></td>
+          <td id="s1" class="sprite-H02U card-U"></td>
+          <td id="s2" class="sprite-H03U card-U"></td>
+          <td id="s3" class="sprite-H04U card-U"></td>
+          <td id="s4" class="sprite-H05U card-U"></td>
+          <td id="s5" class="sprite-H06U card-U"></td>
+          <td id="s6" class="sprite-H07U card-U"></td>
+          <td id="s7" class="sprite-H08U card-U"></td>
+          <td id="s8" class="sprite-H09U card-U"></td>
+          <td class="sprite-NLU card-U"></td>
+        </tr>
+      </table>
+    </td>
+    <td id="score-container">
+      <b>得点表</b><br>
+      <table id="score" cellspacing="5">
+        <tr>
+          <td></td>
+          <td><div id="sc_n"></div></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><div id="sc_w"></div></td>
+          <td><div id="sc_count"></div></td>
+          <td><div id="sc_e"></div></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><div id="sc_s"></div></td>
+          <td></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<div id="character">
+  <img id="char" src="./img/d_lico.png">
+  <div id="msgbox">Lispの力で動いています</div>
 </div>
 
-<div style="visibility:visible" id="main_div">
-  <table border="0">
-    <tr>
-      <td>
-        <table id="sprites" border="0">
-          <tr>
-            <td><img src="./img/NLD.gif"></td>
-            <td id="n0" class="sprite-C03 up"></td>
-            <td id="n1" class="sprite-C02 up"></td>
-            <td><img id="n2"></td>
-            <td><img id="n3"></td>
-            <td><img id="n4"></td>
-            <td><img id="n5"></td>
-            <td><img id="n6"></td>
-            <td><img id="n7"></td>
-            <td><img id="n8"></td>
-            <td><img src="./img/NLD.gif"></td>
-          </tr>
-          <tr>
-            <td><img id="w0"></td>
-            <td colspan="9" rowspan="9" bgcolor="#228822" align="center" valign="center">
-              <a href="#"><img id="im_yama"></a>
-              <a href="#"><img id="im_ba"></a>
-              <br>
-              <div id="info"></div>
-            </td>
-            <td><img id="e0"></td>
-          </tr>
-          <tr>
-            <td id="w1" class="sprite-C01R right"></td>
-
-            <td><img id="e1"></td>
-          </tr>
-          <tr>
-            <td><img id="w2"></td>
-            <td><img id="e2"></td>
-          </tr>          
-          <tr>
-            <td><img id="w3"></td>
-            <td><img id="e3"></td>
-          </tr>
-          <tr>
-            <td><img id="w4"></td>
-            <td><img id="e4"></td>
-          </tr>
-          <tr>
-            <td><img id="w5"></td>
-            <td><img id="e5"></td>
-          </tr>
-          <tr>
-            <td><img id="w6"></td>
-            <td><img id="e6"></td>
-          </tr>
-          <tr>
-            <td><img id="w7"></td>
-            <td><img id="e7"></td>
-          </tr>
-          <tr>
-            <td><img id="w8"></td>
-            <td><img id="e8"></td>
-          </tr>
-          <tr>
-            <td><img src="./img/NL.gif"></td>
-            <td><a href="#"><img id="s0"></a></td>
-            <td><a href="#"><img id="s1"></a></td>
-            <td><a href="#"><img id="s2"></a></td>
-            <td><a href="#"><img id="s3"></a></td>
-            <td><a href="#"><img id="s4"></a></td>
-            <td><a href="#"><img id="s5"></a></td>
-            <td><a href="#"><img id="s6"></a></td>
-            <td><a href="#"><img id="s7"></a></td>
-            <td><a href="#"><img id="s8"></a></td>
-            <td><img src="./img/NL.gif"></td>
-          </tr>
-        </table>
-      </td>
-      <td valign="bottom">
-        <b>得点表</b><br>
-        <table border="0" bgcolor="#228822" cellspacing="5">
-          <tr>
-            <td></td>
-            <td><div id="sc_n"></div></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td><div id="sc_w"></div></td>
-            <td><div id="sc_count"></div></td>
-            <td><div id="sc_e"></div></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td><div id="sc_s"></div></td>
-            <td></td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-
-  <table border="1">
-    <tr>
-      <td width="100px" height="100px"><img id="char" src="./img/d_lico.png"></td>
-      <td width="350px" align="left" valign="top"><div id="msgbox">Lispの力で動いています</div></td>
-    </tr>
-  </table>
-  
-  <form id="f">
-    <input type="hidden" id="p0" name="p0" value="りこ">
-    <input type="hidden" id="s0" name="s0" value="0">
-    <input type="hidden" id="i0" name="i0" value="./img/d_lico.png">
-    <input type="hidden" id="p1" name="p1" value="すず">
-    <input type="hidden" id="s1" name="s1" value="0">
-    <input type="hidden" id="i1" name="i1" value="./img/d_suzu.png">
-    <input type="hidden" id="p2" name="p2" value="わかな">
-    <input type="hidden" id="s2" name="s2" value="0">
-    <input type="hidden" id="i2" name="i2" value="./img/d_wakana.png">
-    <input type="hidden" id="p3" name="p3" value="りっか">
-    <input type="hidden" id="s3" name="s3" value="0">
-    <input type="hidden" id="i3" name="i3" value="./img/d_rikka.png">
-  </form>
-</div>
+<form id="f">
+  <input type="hidden" id="p0" name="p0" value="りこ">
+  <input type="hidden" id="s0" name="s0" value="0">
+  <input type="hidden" id="i0" name="i0" value="./img/d_lico.png">
+  <input type="hidden" id="p1" name="p1" value="すず">
+  <input type="hidden" id="s1" name="s1" value="0">
+  <input type="hidden" id="i1" name="i1" value="./img/d_suzu.png">
+  <input type="hidden" id="p2" name="p2" value="わかな">
+  <input type="hidden" id="s2" name="s2" value="0">
+  <input type="hidden" id="i2" name="i2" value="./img/d_wakana.png">
+  <input type="hidden" id="p3" name="p3" value="りっか">
+  <input type="hidden" id="s3" name="s3" value="0">
+  <input type="hidden" id="i3" name="i3" value="./img/d_rikka.png">
+</form>
 </body>
 </html>
 
