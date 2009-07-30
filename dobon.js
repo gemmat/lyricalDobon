@@ -555,19 +555,17 @@ function yamaClick() {
       nextTurn();
     }
   } else {
-    if (!messageMode && turn == 0) {
-      if (!dropOnly || countCard(0) == 1) {
-        if (numDraw == 0) {
-          if (drawCard(0)) {
-            updateCard();
-            nextTurn();
-          }
-        } else {
-          if (drawMultiCards(0, numDraw)) {
-            numDraw = 0;
-            updateCard();
-            nextTurn();
-          }
+    if (!messageMode && turn == 0 && !dropOnly) {
+      if (numDraw == 0) {
+        if (drawCard(0)) {
+          updateCard();
+          nextTurn();
+        }
+      } else {
+        if (drawMultiCards(0, numDraw)) {
+          numDraw = 0;
+          updateCard();
+          nextTurn();
         }
       }
     }
@@ -602,7 +600,7 @@ function cardClick(aN) {
       }
     } else {
       if (check === false) return;
-      if (check === "almost8" && rank != 8 - 1) return;
+      if (check === "almost8" && rank == 8 - 1) return;
       if (dropOnly || suit == baSuit || rank == baRank) {
         var drop = dropCard(suit, rank);
         shiftCard(0, aN);
